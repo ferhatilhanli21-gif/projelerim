@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 import { Header } from '@/components/layout/Header';
+import { PresenceTracker } from '@/components/common/PresenceTracker';
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const supabase = await createClient();
@@ -10,7 +11,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   const { data: profile } = await supabase
     .from('profiles')
-    .select('username, role')
+    .select('username, full_name, role')
     .eq('id', user.id)
     .single();
 
@@ -18,6 +19,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
+      <PresenceTracker userId={user.id} fullName={profile.full_name ?? profile.username} />
       <Header username={profile.username} role="admin" />
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 py-6">
         {children}

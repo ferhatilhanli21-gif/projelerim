@@ -8,11 +8,15 @@ import { MessageInput } from '@/components/messaging/MessageInput';
 import { LoadingSpinner } from '@/components/common/LoadingSpinner';
 import { Users } from 'lucide-react';
 
+const CHANNEL = 'group-broadcast';
+
 export default function AdminGroupChatPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [myId, setMyId] = useState('');
   const [loading, setLoading] = useState(true);
   const bottomRef = useRef<HTMLDivElement>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const channelRef = useRef<any>(null);
 
   useEffect(() => {
     const supabase = createClient();
@@ -29,25 +33,27 @@ export default function AdminGroupChatPage() {
 
   useEffect(() => { loadMessages(); }, [loadMessages]);
 
+  // Broadcast ile anlık mesajlar
   useEffect(() => {
     const supabase = createClient();
     const channel = supabase
-      .channel('admin-group-chat')
-      .on('postgres_changes', {
-        event: 'INSERT', schema: 'public', table: 'messages',
-        filter: 'receiver_id=is.null',
-      }, () => loadMessages())
+      .channel(CHANNEL)
+      .on('broadcast', { event: 'new_message' }, () => loadMessages())
       .subscribe();
+    channelRef.current = channel;
     return () => { supabase.removeChannel(channel); };
   }, [loadMessages]);
 
   async function handleSend(body: string, fileUrl?: string, fileName?: string, fileType?: string) {
-    await fetch('/api/group-chat', {
+    const res = await fetch('/api/group-chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ body, file_url: fileUrl, file_name: fileName, file_type: fileType }),
     });
-    loadMessages();
+    if (res.ok) {
+      await loadMessages();
+      channelRef.current?.send({ type: 'broadcast', event: 'new_message', payload: {} });
+    }
   }
 
   return (
