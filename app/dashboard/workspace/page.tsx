@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { Send, Paperclip, Settings, X, Cpu, ChevronDown, Trash2, ToggleLeft, ToggleRight, FileText, Download } from 'lucide-react';
+import { Send, Paperclip, Settings, X, Cpu, Trash2, ToggleLeft, ToggleRight, FileText, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 /* ─── Sabitler ─── */

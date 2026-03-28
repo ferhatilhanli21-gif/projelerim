@@ -17,17 +17,15 @@ interface Props {
   isOwn: boolean;
 }
 
-function SenderAvatar({ name, avatarUrl, isAdmin, size = 8 }: {
+function SenderAvatar({ name, avatarUrl, isAdmin }: {
   name: string;
   avatarUrl: string | null;
   isAdmin: boolean;
-  size?: number;
 }) {
-  const dim = `w-${size} h-${size}`;
   const inner = avatarUrl ? (
-    <img src={avatarUrl} alt={name} className={`${dim} rounded-full object-cover`} />
+    <img src={avatarUrl} alt={name} className="w-8 h-8 rounded-full object-cover" />
   ) : (
-    <div className={`${dim} rounded-full flex items-center justify-center font-bold text-sm select-none
+    <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm select-none
       ${isAdmin ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-600'}`}>
       {name.charAt(0).toUpperCase()}
     </div>
@@ -55,11 +53,7 @@ export function MessageBubble({ message, isOwn }: Props) {
       <div className={`flex gap-2 items-end ${isOwn ? 'flex-row-reverse' : 'flex-row'}`}>
 
         {/* Avatar — her zaman göster */}
-        <SenderAvatar
-          name={name}
-          avatarUrl={sender?.avatar_url ?? null}
-          isAdmin={isAdmin}
-        />
+        <SenderAvatar name={name} avatarUrl={sender?.avatar_url ?? null} isAdmin={isAdmin} />
 
         <div className={`max-w-[68%] flex flex-col gap-0.5 ${isOwn ? 'items-end' : 'items-start'}`}>
           {/* İsim + admin rozeti */}
